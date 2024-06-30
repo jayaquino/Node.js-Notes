@@ -43,16 +43,27 @@ exports.getTour = (
   });
 };
 
-exports.createTour = (
+exports.createTour = async (
   request,
   response,
 ) => {
-  response.status(201).json({
-    status: 'success',
-    // data: {
-    //   tour: newTour,
-    // },
-  });
+  try {
+    const newTour = await Tour.create(
+      request.body,
+    );
+
+    response.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (error) {
+    response.status(400).json({
+      status: 'fail',
+      message: error,
+    });
+  }
 };
 
 exports.updateTour = (
