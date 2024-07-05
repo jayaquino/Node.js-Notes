@@ -17,18 +17,27 @@ exports.checkBody = (
   next();
 };
 
-exports.getAllTours = (
+exports.getAllTours = async (
   request,
   response,
 ) => {
-  response.status(200).json({
-    status: 'success',
-    requestedAt: request.requestTime,
-    // results: tours.length,
-    // data: {
-    //   tours,
-    // },
-  });
+  try {
+    const tours = await Tour.find();
+
+    response.status(200).json({
+      status: 'success',
+      requestedAt: request.requestTime,
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
 };
 
 exports.getTour = (
