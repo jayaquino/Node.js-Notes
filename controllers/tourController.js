@@ -33,23 +33,33 @@ exports.getAllTours = async (
       },
     });
   } catch (error) {
-    res.status(404).json({
+    response.status(404).json({
       status: 'fail',
       message: error,
     });
   }
 };
 
-exports.getTour = (
+exports.getTour = async (
   request,
   response,
 ) => {
-  response.status(200).json({
-    status: 'success',
-    // data: {
-    //   tour,
-    // },
-  });
+  try {
+    const tour = await Tour.findById(
+      request.params.id,
+    );
+    response.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    response.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
 };
 
 exports.createTour = async (
