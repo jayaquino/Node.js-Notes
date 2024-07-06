@@ -22,7 +22,27 @@ exports.getAllTours = async (
   response,
 ) => {
   try {
-    const tours = await Tour.find();
+    // console.log(request.query); Gets all query parameters
+
+    // Filtering Method 1:
+    // const tours = await Tour.find({
+    //   duration: 5,
+    //   difficulty: 'easy',
+    // });
+
+    // Filtering Method 2, Mongoose way:
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    const tours = await Tour.find(
+      request.query,
+    );
+
+    // Get all tours
+    // const tours = await Tour.find();
 
     response.status(200).json({
       status: 'success',

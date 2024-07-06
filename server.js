@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './config.env' }); // Reading environment variables must come before launching the app
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
