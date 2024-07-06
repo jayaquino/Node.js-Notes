@@ -66,9 +66,16 @@ exports.getAllTours = async (
     );
 
     // Filtering to get based on query params
-    const query = Tour.find(
+    let query = Tour.find(
       JSON.parse(queryStr),
     );
+
+    // SORTING
+    if (request.query.sort) {
+      query = query.sort(
+        request.query.sort,
+      );
+    }
 
     // The QueryObject only executes when awaited on
     const tours = await query;
