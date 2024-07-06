@@ -77,6 +77,9 @@ exports.getAllTours = async (
         .split(',')
         .join(' ');
       query = query.sort(sortBy);
+    } else {
+      // Good practice to default sorting by created at descending
+      query = query.sort('-createdAt');
     }
 
     // The QueryObject only executes when awaited on
