@@ -37,12 +37,31 @@ exports.getAllTours = async (
     //   .where('difficulty')
     //   .equals('easy');
 
-    const tours = await Tour.find(
-      request.query,
+    const queryObj = {
+      ...request.query,
+    }; // Setting a new object based on another object is a reference. This uses destructuring to create another
+
+    const excludedFields = [
+      'page',
+      'sort',
+      'limit',
+      'fields',
+    ]; // Limits paging, sorting, limiting, and selecting specific fields
+
+    // Delete excluded parameters
+    excludedFields.forEach(
+      (element) =>
+        delete queryObj[element],
     );
+
+    // Filtering to get based on query params
+    const query = Tour.find(queryObj);
 
     // Get all tours
     // const tours = await Tour.find();
+
+    // The QueryObject only executes when awaited on
+    const tours = await query;
 
     response.status(200).json({
       status: 'success',
