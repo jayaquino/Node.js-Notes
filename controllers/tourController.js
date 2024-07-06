@@ -54,11 +54,21 @@ exports.getAllTours = async (
         delete queryObj[element],
     );
 
-    // Filtering to get based on query params
-    const query = Tour.find(queryObj);
-
     // Get all tours
     // const tours = await Tour.find();
+
+    // Advanced filtering using GTE, LTE, LT, and GT
+    let queryStr =
+      JSON.stringify(queryObj);
+    queryStr = queryStr.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`, // g means it happens multiple times
+    );
+
+    // Filtering to get based on query params
+    const query = Tour.find(
+      JSON.parse(queryStr),
+    );
 
     // The QueryObject only executes when awaited on
     const tours = await query;
