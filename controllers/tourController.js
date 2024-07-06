@@ -82,6 +82,19 @@ exports.getAllTours = async (
       query = query.sort('-createdAt');
     }
 
+    // FIELD LIMITING
+    if (request.query.fields) {
+      const fields =
+        request.query.fields
+          .split(',')
+          .join(' ');
+      query = query.select(fields);
+      // query = query.select('name duration price') Express accepts this format
+    } else {
+      // MondoDB, '-' means exclude in select. This excludes the default mongodb variable
+      query = query.select('-__v');
+    }
+
     // The QueryObject only executes when awaited on
     const tours = await query;
 
