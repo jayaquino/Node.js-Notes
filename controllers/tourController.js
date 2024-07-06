@@ -95,6 +95,28 @@ exports.getAllTours = async (
       query = query.select('-__v');
     }
 
+    // PAGINATION
+    // page=2&limit=10, 1-10, page 1, 11-20, page 2, 21-30 page 3
+    // skip how many values and limit how many outputs
+    const page =
+      request.query.page * 1 || 1; // || provides a default value
+    const limit =
+      request.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    query = query
+      .skip(skip)
+      .limit(limit);
+
+    // If page does not exist, throw an error
+    if (request.query.page) {
+      const numTours =
+        await Tour.countDocuments(); // Returns number of documents
+      if (skip >= numTours)
+        throw new Error(
+          'This page does not exist',
+        );
+    }
+
     // The QueryObject only executes when awaited on
     const tours = await query;
 
