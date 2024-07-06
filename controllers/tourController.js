@@ -72,9 +72,11 @@ exports.getAllTours = async (
 
     // SORTING
     if (request.query.sort) {
-      query = query.sort(
-        request.query.sort,
-      );
+      // MULTI-VARIABLE SORTING
+      const sortBy = request.query.sort
+        .split(',')
+        .join(' ');
+      query = query.sort(sortBy);
     }
 
     // The QueryObject only executes when awaited on
