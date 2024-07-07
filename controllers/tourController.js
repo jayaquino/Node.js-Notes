@@ -31,28 +31,15 @@ exports.checkBody = (
   next();
 };
 
-exports.getAllTours = async (
-  request,
-  response,
-) => {
-  try {
-    // console.log(request.query); Gets all query parameters
+class APIFeatures {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
 
-    // Filtering Method 1:
-    // const tours = await Tour.find({
-    //   duration: 5,
-    //   difficulty: 'easy',
-    // });
-
-    // Filtering Method 2, Mongoose way:
-    // const tours = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
-
+  filter() {
     const queryObj = {
-      ...request.query,
+      ...this.queryString,
     }; // Setting a new object based on another object is a reference. This uses destructuring to create another
 
     const excludedFields = [
@@ -68,71 +55,93 @@ exports.getAllTours = async (
         delete queryObj[element],
     );
 
-    // Get all tours
-    // const tours = await Tour.find();
-
     // Advanced filtering using GTE, LTE, LT, and GT
     let queryStr =
       JSON.stringify(queryObj);
-    queryStr = queryStr.replace(
+    this.queryString = queryStr.replace(
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`, // g means it happens multiple times
     );
 
     // Filtering to get based on query params
-    let query = Tour.find(
+    this.query = this.query.find(
       JSON.parse(queryStr),
     );
 
-    // SORTING
-    if (request.query.sort) {
-      // MULTI-VARIABLE SORTING
-      const sortBy = request.query.sort
-        .split(',')
-        .join(' ');
-      query = query.sort(sortBy);
-    } else {
-      // Good practice to default sorting by created at descending
-      query = query.sort('-createdAt');
-    }
+    return this;
+  }
 
-    // FIELD LIMITING
-    if (request.query.fields) {
-      const fields =
-        request.query.fields
+  sort() {
+    // SORTING
+    console.log(this.queryString);
+    if (this.queryString.sort) {
+      // MULTI-VARIABLE SORTING
+      const sortBy =
+        this.queryString.sort
           .split(',')
           .join(' ');
-      query = query.select(fields);
-      // query = query.select('name duration price') Express accepts this format
+      this.query =
+        this.query.sort(sortBy);
     } else {
-      // MondoDB, '-' means exclude in select. This excludes the default mongodb variable
-      query = query.select('-__v');
+      // Good practice to default sorting by created at descending
+      this.query = this.query.sort(
+        '-createdAt',
+      );
     }
 
+    return this;
+  }
+
+  limitFields() {
+    // FIELD LIMITING
+    if (this.queryString.fields) {
+      const fields =
+        this.queryString.fields
+          .split(',')
+          .join(' ');
+      this.query =
+        this.query.select(fields);
+      // query = query.select('name duration price') Express accepts this format
+    } else {
+      // MongoDB, '-' means exclude in select. This excludes the default mongodb variable
+      this.query =
+        this.query.select('-__v');
+    }
+    return this;
+  }
+
+  paginate() {
     // PAGINATION
     // page=2&limit=10, 1-10, page 1, 11-20, page 2, 21-30 page 3
     // skip how many values and limit how many outputs
     const page =
-      request.query.page * 1 || 1; // || provides a default value
+      this.queryString.page * 1 || 1; // || provides a default value
     const limit =
-      request.query.limit * 1 || 100;
+      this.queryString.limit * 1 || 100;
     const skip = (page - 1) * limit;
-    query = query
+    this.query = this.query
       .skip(skip)
       .limit(limit);
 
-    // If page does not exist, throw an error
-    if (request.query.page) {
-      const numTours =
-        await Tour.countDocuments(); // Returns number of documents
-      if (skip >= numTours)
-        throw new Error(
-          'This page does not exist',
-        );
-    }
+    return this;
+  }
+}
 
+exports.getAllTours = async (
+  request,
+  response,
+) => {
+  try {
     // The QueryObject only executes when awaited on
-    const tours = await query;
+    const features = new APIFeatures(
+      Tour.find(),
+      request.query,
+    )
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query;
 
     response.status(200).json({
       status: 'success',
