@@ -9,9 +9,14 @@ const {
   checkBody,
   aliasTopTours,
   getTourStats,
+  getMonthlyPlan,
 } = require('../controllers/tourController');
 
 const router = express.Router();
+
+router
+  .route('/monthly-plan/:year')
+  .get(getMonthlyPlan);
 
 router
   .route('/tour-stats')
