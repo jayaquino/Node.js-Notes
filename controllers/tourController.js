@@ -58,7 +58,7 @@ class APIFeatures {
     // Advanced filtering using GTE, LTE, LT, and GT
     let queryStr =
       JSON.stringify(queryObj);
-    this.queryString = queryStr.replace(
+    queryStr = queryStr.replace(
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`, // g means it happens multiple times
     );
