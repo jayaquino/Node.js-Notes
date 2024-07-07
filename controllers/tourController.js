@@ -1,5 +1,19 @@
 const Tour = require('./../models/tourModel');
 
+exports.aliasTopTours = (
+  request,
+  response,
+  next,
+) => {
+  // Pre-fills the query string so the user does not have to do it.
+  request.query.limit = '5';
+  request.query.sort =
+    '-ratingsAverage,price';
+  request.query.fields =
+    'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 exports.checkBody = (
   request,
   response,
