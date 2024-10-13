@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
+
 const tourSchema = new mongoose.Schema(
   {
     name: {
@@ -15,6 +17,10 @@ const tourSchema = new mongoose.Schema(
         10,
         'A tour name must have more than or equal to 10 characters'
       ]
+      // validate: [
+      //   validator.isAlpha,
+      //   'Tour name must only contain characters'
+      // ]
     },
     slug: String,
     duration: {
@@ -48,7 +54,17 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price']
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (value) {
+          //'this' will not work on update. Only when working with a new document. Mongoose caveat
+          return value < this.price; // e.g. 100 < 200 no error. 250 < 200 triggers validation error
+        },
+        message:
+          'Discount price ({VALUE}) should be below the regular price'
+      }
+    },
     summary: {
       type: String,
       trim: true // Removes white space in beginning and end
