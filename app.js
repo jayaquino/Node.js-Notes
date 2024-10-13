@@ -8,9 +8,7 @@ const app = express();
 
 // MIDDLEWARE
 console.log(process.env.NODE_ENV);
-if (
-  process.env.NODE_ENV === 'development'
-) {
+if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 app.use(express.json());
@@ -21,8 +19,7 @@ app.use((request, response, next) => {
 });
 
 app.use((request, response, next) => {
-  request.requestTime =
-    new Date().toISOString();
+  request.requestTime = new Date().toISOString();
   next();
 });
 /*

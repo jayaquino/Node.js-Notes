@@ -5,19 +5,17 @@ dotenv.config({ path: './config.env' }); // Reading environment variables must c
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
-  process.env.DATABASE_PASSWORD,
+  process.env.DATABASE_PASSWORD
 );
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: false,
+    useFindAndModify: false
   })
   .then((connection) => {
     console.log(connection.connections);
-    console.log(
-      'DB connection successful',
-    );
+    console.log('DB connection successful');
   });
 const app = require('./app');
 
@@ -25,7 +23,5 @@ console.log(process.env);
 
 const port = process.env.PORT;
 app.listen(port, () => {
-  console.log(
-    `App running on port ${port}`,
-  );
+  console.log(`App running on port ${port}`);
 });

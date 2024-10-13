@@ -5,25 +5,17 @@ const {
   createUser,
   getUser,
   updateUser,
-  deleteUser,
+  deleteUser
 } = require('../controllers/userController');
 
 const router = express.Router();
 
-router.param(
-  'id',
-  (request, response, next, value) => {
-    console.log(
-      `User id is : ${value}`,
-    );
-    next();
-  },
-);
+router.param('id', (request, response, next, value) => {
+  console.log(`User id is : ${value}`);
+  next();
+});
 
-router
-  .route('/')
-  .get(getAllUsers)
-  .post(createUser);
+router.route('/').get(getAllUsers).post(createUser);
 
 router
   .route('/:id')
