@@ -4,34 +4,22 @@ const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [
-        true,
-        'A tour must have a name',
-      ],
+      required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
     },
     slug: String,
     duration: {
       type: Number,
-      required: [
-        true,
-        'A tour must have a duration',
-      ],
+      required: [true, 'A tour must have a duration'],
     },
     maxGroupSize: {
       type: Number,
-      required: [
-        true,
-        'A tour must have a group size',
-      ],
+      required: [true, 'A tour must have a group size'],
     },
     difficulty: {
       type: String,
-      required: [
-        true,
-        'A tour must have a difficulty',
-      ],
+      required: [true, 'A tour must have a difficulty'],
     },
     ratingsAverage: {
       type: Number,
@@ -43,10 +31,7 @@ const tourSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: [
-        true,
-        'A tour must have a price',
-      ],
+      required: [true, 'A tour must have a price'],
     },
     priceDiscount: Number,
     summary: {
@@ -56,17 +41,11 @@ const tourSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
-      required: [
-        true,
-        'A tour must have a description',
-      ],
+      required: [true, 'A tour must have a description'],
     },
     imageCover: {
       type: String,
-      required: [
-        true,
-        'A tour must have a cover image',
-      ],
+      required: [true, 'A tour must have a cover image'],
     },
     images: [String],
     createdAt: {
@@ -85,11 +64,9 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
-tourSchema
-  .virtual('durationWeeks')
-  .get(function () {
-    return this.duration / 7;
-  });
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7;
+});
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
@@ -124,16 +101,13 @@ tourSchema.pre(
   },
 );
 
-tourSchema.post(
-  /^find/,
-  function (docs, next) {
-    console.log(
-      `Query took ${Date.now() - this.start} milliseconds`,
-    );
-    console.log(docs);
-    next();
-  },
-);
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(
+    `Query took ${Date.now() - this.start} milliseconds`,
+  );
+  console.log(docs);
+  next();
+});
 
 // tourSchema.pre('find' or 'findOne', function (next) {
 //   this.find({
@@ -142,9 +116,18 @@ tourSchema.post(
 //   next();
 // });
 
-const Tour = mongoose.model(
-  'Tour',
-  tourSchema,
-);
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({
+    // Unshift adds beginning of array, shift adds end of the array
+    $match: {
+      secretTour: { $ne: true },
+    },
+  });
+  console.log(this.pipeline());
+  next();
+});
+
+const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
