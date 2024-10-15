@@ -45,6 +45,7 @@ app.post('/', (request, response) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+// If all other routes are not matched, it will his this route.
 app.all('*', (req, res, next) => {
   res.status(404).json({
     status: 'fail',
