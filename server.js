@@ -41,5 +41,3 @@ process.on('unhandledRejection', (err) => {
 });
 
 // TEST
-
-console.log(x);
