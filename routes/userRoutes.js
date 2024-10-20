@@ -8,12 +8,16 @@ const {
   deleteUser
 } = require('../controllers/userController');
 
+const authController = require('../controllers/authController');
+
 const router = express.Router();
 
 router.param('id', (request, response, next, value) => {
   console.log(`User id is : ${value}`);
   next();
 });
+
+router.post('/signup', authController.signup);
 
 router.route('/').get(getAllUsers).post(createUser);
 
