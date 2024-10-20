@@ -3,6 +3,12 @@ const catchAsync = require('../utilities/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utilities/appError');
 
+const signToken = (id) => {
+  return jwt.sign({ id }, 'process.env.JWT_SECRET', {
+    expiresIn: process.env.JWT_EXPIRES_IN
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   // Only allow data that we need, user cannot manually input a role
   const newUser = await User.create({
@@ -12,13 +18,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm
   });
 
-  const token = jwt.sign(
-    { id: newUser._id },
-    'process.env.JWT_SECRET',
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN
-    }
-  );
+  const token = signToken(newUser._id);
 
   res.status(201).json({
     status: 'success',
@@ -44,10 +44,18 @@ exports.login = catchAsync(async (req, res, next) => {
     '+password'
   ); // Select a field by default not selected
 
-  console.log(user);
+  if (
+    !user ||
+    !(await user.correctPassword(password, user.password))
+  ) {
+    return next(
+      new AppError('Incorrect email or password', 401)
+    );
+  }
 
   // 3) If everything is ok, send token to client
-  const token = '';
+  const token = signToken(user._id);
+
   res.status(200).json({
     status: 'success',
     token
