@@ -29,7 +29,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.login = (req, res, next) => {
+exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // 1) Check if email and pw exists
@@ -40,7 +40,11 @@ exports.login = (req, res, next) => {
   }
   // 2) Check if user exists && pw is correct
 
-  const user = User.findOne({ email });
+  const user = await User.findOne({ email }).select(
+    '+password'
+  ); // Select a field by default not selected
+
+  console.log(user);
 
   // 3) If everything is ok, send token to client
   const token = '';
@@ -48,4 +52,4 @@ exports.login = (req, res, next) => {
     status: 'success',
     token
   });
-};
+});
