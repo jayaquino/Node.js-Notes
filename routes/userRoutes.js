@@ -18,6 +18,7 @@ router.param('id', (request, response, next, value) => {
 });
 
 router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
 router.route('/').get(getAllUsers).post(createUser);
 
