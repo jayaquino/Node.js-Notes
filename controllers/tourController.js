@@ -1,8 +1,8 @@
 const { response } = require('../app');
-const Tour = require('./../models/tourModel');
-const APIFeatures = require('./../utilities/apiFeatures');
-const catchAsync = require('./../utilities/catchAsync');
-const AppError = require('./../utilities/appError');
+const Tour = require('../models/tourModel');
+const APIFeatures = require('../utilities/apiFeatures');
+const catchAsync = require('../utilities/catchAsync');
+const AppError = require('../utilities/appError');
 
 exports.aliasTopTours = (req, res, next) => {
   // Pre-fills the query string so the user does not have to do it.

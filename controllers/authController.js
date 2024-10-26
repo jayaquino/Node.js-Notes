@@ -1,8 +1,8 @@
+const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 const User = require('../models/userModel');
 const catchAsync = require('../utilities/catchAsync');
-const jwt = require('jsonwebtoken');
 const AppError = require('../utilities/appError');
-const { promisify } = require('util');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -15,6 +15,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
+    role: req.body.role,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm
   });
@@ -116,3 +117,20 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = freshUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles is an array.
+    // The user as available since we set the req.user on the protect middleware. If the protect middleware isn't used, then the user is not available.
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(
+          'You do not have permission to perform this action',
+          403
+        )
+      );
+    }
+
+    next();
+  };
+};
