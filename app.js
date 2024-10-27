@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const AppError = require('./utilities/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -10,6 +11,10 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 // MIDDLEWARE
+// Set security HTTP headers
+app.use(helmet());
+
+// Development logging
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -22,16 +27,16 @@ const limiter = rateLimit({
   message:
     'Too many requests form this IP, please try again in an hour'
 });
-
 app.use('/api', limiter);
 
-app.use(express.json());
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
 
+// Test middleware
 app.use((request, response, next) => {
   console.log('Hello Middleware');
   next();
 });
-
 app.use((request, response, next) => {
   request.requestTime = new Date().toISOString();
   next();
