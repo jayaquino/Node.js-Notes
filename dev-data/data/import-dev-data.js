@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const fs = require('fs');
-const Tour = require('./../../models/tourModel');
+const Tour = require('../../models/tourModel');
 
 dotenv.config({ path: './config.env' });
 
@@ -15,7 +15,7 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false
   })
-  .then((connection) => {
+  .then(() => {
     console.log('DB connection successful');
   });
 
