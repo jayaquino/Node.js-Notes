@@ -63,20 +63,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUser = (request, response) => {
-  response.status(500).json({
-    status: 'error',
-    message: 'This route not defind'
-  });
-};
-
-exports.createUser = (request, response) => {
-  response.status(500).json({
-    status: 'error',
-    message: 'This route not defind'
-  });
-};
-
+exports.getUser = factory.getOne(User);
+// Sign up is used for createOne
 // Do NOT update passwords with this.
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
