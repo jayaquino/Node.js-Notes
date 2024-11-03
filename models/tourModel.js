@@ -176,6 +176,19 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
+tourSchema.pre(/^find/, function (next) {
+  // Populate gets all data of a reference. Can manually select. Populate behind the scenes creates another query, may affect performance.
+  // const tour = await Tour.findById(req.params.id).populate(
+  //   'guides'
+  // );
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt'
+  });
+
+  next();
+});
+
 // tourSchema.pre('find' or 'findOne', function (next) {
 //   this.find({
 //     secretTour: { $ne: true },

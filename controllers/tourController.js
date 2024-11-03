@@ -43,14 +43,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
-  // Populate gets all data of a reference. Can manually select. Populate behind the scenes creates another query, may affect performance.
-  // const tour = await Tour.findById(req.params.id).populate(
-  //   'guides'
-  // );
-  const tour = await Tour.findById(req.params.id).populate({
-    path: 'guides',
-    select: '-__v -passwordChangedAt'
-  });
+  const tour = await Tour.findById(req.params.id);
 
   if (!tour) {
     next(new AppError('No tour found with that ID', 404));
