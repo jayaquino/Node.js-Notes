@@ -23,30 +23,29 @@ router.patch(
 router.patch(
   '/updateMyPassword',
   authController.protect,
+  authController.protect,
   authController.updatePassword
 );
+
+// Protects the routes ONLY after this point. Middleware runs in sequence.
+router.use(authController.protect);
+
 router.get(
   '/me',
-  authController.protect,
   userController.getMe,
   userController.getUser
 );
-router.patch(
-  '/updateMe',
-  authController.protect,
-  userController.updateMe
-);
-router.delete(
-  '/deleteMe',
-  authController.protect,
-  userController.deleteMe
-);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+// Protect these routes, only admin role
+router.use(authController.restrictTo('admin'));
 
 router.route('/').get(userController.getAllUsers);
-
 router
   .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
+
 module.exports = router;
