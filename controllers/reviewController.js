@@ -38,3 +38,4 @@ exports.createReview = catchAsync(
 );
 
 exports.deleteReview = factory.deleteOne(Review);
+exports.updateReview = factory.updateOne(Review);

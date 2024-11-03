@@ -17,5 +17,5 @@ router
   );
 
 router.route('/:id').delete(reviewController.deleteReview);
-
+router.route('/:id').patch(reviewController.updateReview);
 module.exports = router;
