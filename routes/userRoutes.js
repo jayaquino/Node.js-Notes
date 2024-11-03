@@ -2,6 +2,7 @@ const express = require('express');
 
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const reviewController = require('../controllers/reviewController');
 
 const router = express.Router();
 
@@ -47,4 +48,12 @@ router
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
 
+// Nested Routes
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('users'),
+    reviewController.createReview
+  );
 module.exports = router;

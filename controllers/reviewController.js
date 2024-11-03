@@ -1,5 +1,5 @@
-const Review = require('./../models/reviewModel');
-const catchAsync = require('./../utilities/catchAsync');
+const Review = require('../models/reviewModel');
+const catchAsync = require('../utilities/catchAsync');
 const APIFeatures = require('../utilities/apiFeatures');
 
 exports.checkBody = (req, res, next) => {
@@ -41,6 +41,9 @@ exports.getAllReviews = catchAsync(
 
 exports.createReview = catchAsync(
   async (req, res, next) => {
+    if (!req.body.tour) req.body.tour = req.params.tourId;
+    if (!req.body.user) req.body.user = req.user.id;
+
     const newReview = await Review.create(req.body);
 
     res.status(201).json({
