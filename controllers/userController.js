@@ -1,6 +1,7 @@
 const catchAsync = require('../utilities/catchAsync');
 const AppError = require('../utilities/appError');
 const User = require('../models/userModel');
+const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -83,9 +84,4 @@ exports.updateUser = (request, response) => {
   });
 };
 
-exports.deleteUser = (request, response) => {
-  response.status(500).json({
-    status: 'error',
-    message: 'This route not defind'
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
