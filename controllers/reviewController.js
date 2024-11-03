@@ -2,20 +2,6 @@ const Review = require('../models/reviewModel');
 const catchAsync = require('../utilities/catchAsync');
 const APIFeatures = require('../utilities/apiFeatures');
 
-exports.checkBody = (req, res, next) => {
-  if (
-    !req.body.review ||
-    !req.body.tour ||
-    !req.body.user
-  ) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Missing review, tour, or user'
-    });
-  }
-  next();
-};
-
 exports.getAllReviews = catchAsync(
   async (req, res, next) => {
     const features = new APIFeatures(
