@@ -63,18 +63,37 @@ reviewSchema.statics.calcAverageRatings = async function (
       }
     }
   ]);
-  console.log(stats);
 
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsQuantity: stats[0].nRating,
-    ratingsAverage: stats[0].avgRating
-  });
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5
+    });
+  }
 };
 
 // Post because the tour should be saved first
 reviewSchema.post('save', function (next) {
   // this points to current review
   this.constructor.calcAverageRatings(this.tour);
+});
+
+// Can't just use a single post in this one like above because the query would already be executed and we can't access it to use findOne().
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  // saving the variable to this.r will make it accessible to the post middleware
+  this.r = await this.findOne();
+  console.log(this.r);
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // this.r = await this.findOne() does NOT work here, query has already executed
+  await this.r.constructor.calcAverageRatings(this.r.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
