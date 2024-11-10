@@ -96,6 +96,8 @@ exports.getAll = (Model) =>
       .limitFields()
       .paginate();
     const doc = await features.query;
+    // const doc = await features.query.explain();
+    // Can add .explain() above to see query statistics
 
     res.status(200).json({
       status: 'success',
