@@ -34,6 +34,12 @@ app.use(
         'https://*.mapbox.com',
         'https://*.stripe.com'
       ],
+      connectSrc: [
+        "'self'",
+        'http://127.0.0.1:3000',
+        'ws://localhost:63186/',
+        'ws://localhost:51809/'
+      ],
       baseUri: ["'self'"],
       fontSrc: ["'self'", 'https:', 'data:'],
       imgSrc: ["'self'", 'https://www.gstatic.com'],
