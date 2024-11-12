@@ -101,7 +101,7 @@ app.use(
 
 // Test middleware
 app.use((req, res, next) => {
-  console.log(req.cookies);
+  // console.log(req.cookies);
   next();
 });
 app.use((request, response, next) => {
