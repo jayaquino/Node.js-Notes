@@ -3,17 +3,21 @@ const AppError = require('../utilities/appError');
 const User = require('../models/userModel');
 const factory = require('./handlerFactory');
 const multer = require('multer');
+const sharp = require('sharp');
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/users');
-  },
-  filename: (req, file, cb) => {
-    // user-773a7sdf7bf-123487134092.jpeg -> user-id-timestamp
-    const ext = file.mimetype.split('/')[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  }
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users');
+//   },
+//   filename: (req, file, cb) => {
+//     // user-773a7sdf7bf-123487134092.jpeg -> user-id-timestamp
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   }
+// });
+
+// Use memory storage since we'll process it
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -35,6 +39,20 @@ const upload = multer({
 });
 
 exports.uploadPhoto = upload.single('photo');
+
+exports.resizePhoto = (req, res, next) => {
+  if (!req.file) return next();
+
+  // Redefined here because multer storage memoryStorage doesn't define file name
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+  next();
+};
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
