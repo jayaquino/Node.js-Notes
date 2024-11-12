@@ -25,4 +25,10 @@ router.get(
   viewsController.getAccount
 );
 
+router.post(
+  '/submit-user-data',
+  authController.protect,
+  viewsController.updateUserData
+);
+
 module.exports = router;
